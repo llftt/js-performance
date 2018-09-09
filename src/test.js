@@ -28,4 +28,4 @@ measure(foo);
 // const duration = retriveResult('foo');
 // console.log(`foo execute duration:${duration}`); //complex 0.19999999858555384, easy 0.09999999747378752,测试精确度不同
 
-// throw Error("custom error")
+throw Error("custom error")

@@ -7,6 +7,8 @@ var inspectorService = {
             console.log('lineNo: ' + lineNo);
             console.log('columnNo: ' + columnNo);
             console.log('error: ' + error);
+            var errorMsgObj = {errorMessage, scriptURI, lineNo, columnNo, error};
+            that.uploadMsg(errorMsgObj);
         }
     },
 
@@ -31,7 +33,7 @@ var inspectorService = {
                 xhr = new ActiveXObject(arguments.callee.activeString); 
         }
         if(xhr){
-            xhr.open('post', '/middleware/errorMsg', true);
+            xhr.open('post', 'http://localhost:9000/middleware/errorMsg', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(msgObj));
         }

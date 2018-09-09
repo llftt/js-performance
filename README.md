@@ -75,3 +75,15 @@ type	页面被载入的方式
 
 --------------------------------------------
 end: 学习地址 https://mp.weixin.qq.com/s?__biz=MzA5NzkwNDk3MQ==&mid=2650588047&idx=1&sn=eed8f5411e9e3903a490384e7b0228b7&chksm=8891d3abbfe65abdfbc32112569d2bf377fe615e7cede6e34bb6afec95396a00ed42f4ddf9fc&mpshare=1&scene=1&srcid=0908PnCCe1zqKLfmkRqeCOyb&pass_ticket=vk0uNXeynic4ASeIY5GMmWKvVxbhkvr19ElxaOqZHmAY%2B21gUBfMJ1GTE%2BceU7m7#rd
+
+
+
+### 错误捕获
+try-catch                  window.onerror          Vue.config.errorHandler         Error Boundary
+
+            否                            source-map压缩              是
+
+
+            上传服务器                                              node中间层解析  服务器解析
+
+https://github.com/luozhihao/error-catch-report/blob/master/server/route.js

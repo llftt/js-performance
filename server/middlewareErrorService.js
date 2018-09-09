@@ -9,6 +9,8 @@ const resolve = file => path.resolve(__dirname, file);
 var app = new express();
 app.listen(3000);
 router.post('/errorMsg/', function(req, res){
+    res.setHeader("Access-Control-Allow-Origin","*");
+    res.setHeader("Access-Control-Allow-Headers", "accept, content-type");  
     let error = req.body;
     let url = error.scriptURI;
     if(url){
@@ -22,26 +24,29 @@ router.post('/errorMsg/', function(req, res){
                 column:error.columnNo
             });
             console.log(`ret: ${ret}`);
-            let url = '';
-            fetch(url, {
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({
-                    errorMessage:error.errorMessage,
-                    source:ret.source,
-                    line:ret.line,
-                    column:ret.column,
-                    stack:error.stack
-                })
-            }).then(function(response){
-                return response.json();
-            }).then(function(json){
-                res.json(json);
-            });
+            res.json({success:true});
+            // let url = '';
+            // fetch(url, {
+            //     method:'POST',
+            //     headers:{
+            //         'Content-Type':'application/json'
+            //     },
+            //     body:JSON.stringify({
+            //         errorMessage:error.errorMessage,
+            //         source:ret.source,
+            //         line:ret.line,
+            //         column:ret.column,
+            //         stack:error.stack
+            //     })
+            // }).then(function(response){
+            //     return response.json();
+            // }).then(function(json){
+            //     res.json(json);
+            // });
         }).catch((err) => {
             
         });
     }
-})
+});
+
+module.exports = router;
