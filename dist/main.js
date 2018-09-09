@@ -93,7 +93,123 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("\r\nvar {prefix, prefixStart, prefixEnd} = __webpack_require__(/*! ./utils.js */ \"./src/utils.js\");\r\n\r\n/**\r\n * 测量某个函数的执行时间\r\n * @param {*} fn \r\n * @param {*} name \r\n * \r\n * performance.mark\r\n * 1.创建一个新的PerformanceMark对象\r\n * 2.将name属性设置为markName\r\n * 3.将entryType属性设置为mark\r\n * 4.将startTime属性设置为performance.now\r\n * 5.将duration属性设置为0\r\n * 6.将mark对象放入队列中\r\n * 7.将mark对象放入performance entry buffer中\r\n * 8.返回undefined\r\n */\r\nconst measureV1 = (fn, name = fn.name) =>{\r\n    performance.mark(prefixStart(name));\r\n    fn();\r\n    performance.mark(prefixEnd(name));\r\n}\r\n\r\n\r\nconst getMarks = key => {\r\n  return performance\r\n    .getEntriesByType('mark') // 只获取通过 performance.mark 记录的数据\r\n    .filter(({ name }) => name === prefixStart(key) || name === prefixEnd(key))\r\n}\r\n\r\nconst getDurationV1 = entries => {\r\n    //[PerformanceMark, PerformanceMark] {name:startxx, entryType:'mark', startTime:, duration} {name:endxx, entryType}\r\n    console.log(entries);\r\n    const {start = 0, end = 0} = entries.reduce((last, { name, startTime }) => {\r\n    if (/^start/.test(name)) {\r\n      last.start = startTime\r\n    } else if (/^end/.test(name)) {\r\n      last.end = startTime\r\n    }\r\n    return last\r\n  },{})\r\n  console.log(`start:${start}, end:${end}`)\r\n  return end - start;\r\n}\r\n\r\nconst retriveResultV1 = key => getDurationV1(getMarks(key));\r\n//----opt--v\r\nconst measure = (fn, name = fn.name) =>{\r\n    const startName = prefixStart(name);\r\n    const endName = prefixEnd(name);\r\n    performance.mark(startName);\r\n    fn();\r\n    performance.mark(endName);\r\n    //调用measure，简化时间计算\r\n    performance.measure(name, startName, endName);\r\n}\r\n\r\n\r\nconst getDuration = entries =>{\r\n    //直接获取duration, entries对应数组 [PerformanceMeasure对象] {duration:, entryType:'measure', name:'foo', startTime:}\r\n    console.log(entries);\r\n    const [{duration}] = entries;\r\n    return duration;\r\n}\r\n\r\nconst retriveResult = key => getDuration(performance.getEntriesByName(key));\r\n\r\n\r\n//异步函数\r\nconst asyncMeasure = async (fn, name = fn.name) =>{\r\n    const startName = prefixStart(name);\r\n    const endName = prefixEnd(name);\r\n    performance.mark(startName);\r\n    await fn();\r\n    performance.mark(endName);\r\n    //调用measure\r\n    performance.measure(name, startName, endName);\r\n}\r\n\r\n\r\nmodule.exports =  {measure:measureV1, retriveResult:retriveResultV1};\n\n//# sourceURL=webpack:///./src/index.js?");
+var { prefix, prefixStart, prefixEnd } = __webpack_require__(/*! ./utils.js */ "./src/utils.js");
+
+
+const selfMeasure = (fn, name = fn.name) => {
+    const mark_start = Date.now();
+    fn();
+    const duration = Date.now() - mark_start;
+    return duration;
+}
+
+// 时间不受系统影响，时间精确
+const selfMeasureV1 = (fn, name = fn.name) => {
+        const mark_start = performance.now();
+        fn();
+        const duration = performance.now() - mark_start;
+        return duration;
+    }
+    /**
+     * 测量某个函数的执行时间
+     * @param {*} fn 
+     * @param {*} name 
+     * 
+     * performance.mark
+     * 1.创建一个新的PerformanceMark对象
+     * 2.将name属性设置为markName
+     * 3.将entryType属性设置为mark
+     * 4.将startTime属性设置为performance.now
+     * 5.将duration属性设置为0
+     * 6.将mark对象放入队列中
+     * 7.将mark对象放入performance entry buffer中
+     * 8.返回undefined
+     */
+const measureV1 = (fn, name = fn.name) => {
+    performance.mark(prefixStart(name));
+    fn();
+    performance.mark(prefixEnd(name));
+}
+
+
+const getMarks = key => {
+    return performance
+        .getEntriesByType('mark') // 只获取通过 performance.mark 记录的数据
+        .filter(({ name }) => name === prefixStart(key) || name === prefixEnd(key))
+}
+
+const getDurationV1 = entries => {
+    //[PerformanceMark, PerformanceMark] {name:startxx, entryType:'mark', startTime:, duration} {name:endxx, entryType}
+    console.log(entries);
+    const { start = 0, end = 0 } = entries.reduce((last, { name, startTime }) => {
+        if (/^start/.test(name)) {
+            last.start = startTime
+        } else if (/^end/.test(name)) {
+            last.end = startTime
+        }
+        return last
+    }, {})
+    console.log(`start:${start}, end:${end}`)
+    return end - start;
+}
+
+const retriveResultV1 = key => getDurationV1(getMarks(key));
+//----opt--v
+const measure = (fn, name = fn.name) => {
+    const startName = prefixStart(name);
+    const endName = prefixEnd(name);
+    performance.mark(startName);
+    fn();
+    performance.mark(endName);
+    //调用measure，简化时间计算
+    performance.measure(name, startName, endName);
+}
+
+
+const getDuration = entries => {
+    //直接获取duration, entries对应数组 [PerformanceMeasure对象] {duration:, entryType:'measure', name:'foo', startTime:}
+    console.log(entries);
+    const [{ duration }] = entries;
+    return duration;
+}
+
+const retriveResult = key => getDuration(performance.getEntriesByName(key));
+
+
+//异步函数
+const asyncMeasure = async(fn, name = fn.name) => {
+    const startName = prefixStart(name);
+    const endName = prefixEnd(name);
+    performance.mark(startName);
+    await fn();
+    performance.mark(endName);
+    //调用measure
+    performance.measure(name, startName, endName);
+}
+
+
+//获取首屏数据
+//首次绘制(first paint)不保罗默认背景绘制,但是包含非默认的背景绘制和iframe
+const measureFirstPaint = () => {
+    performance.getEntriesByType('paint')
+}
+
+const observer = new PerformanceObserver(function(list) {
+
+    const perfEntries = list.getEntries()
+
+    for (let i = 0; i < perfEntries.length; i++) {
+        // 处理数据
+        // 上报性能检测数据
+        console.log("xxx");
+    }
+
+})
+
+// 注册绘制观察者
+observer.observe({ entryTypes: ["paint"] })
+
+module.exports = { measure: measureV1, retriveResult: retriveResultV1 };
 
 /***/ }),
 
@@ -104,7 +220,39 @@ eval("\r\nvar {prefix, prefixStart, prefixEnd} = __webpack_require__(/*! ./utils
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("/**\r\n * NOTE:\r\n *         mark                                       measure\r\n * 作用   运行某个操作时，记录一个时间戳                  针对起始+结束的mark值，汇总形成一个直接可用的性能数据\r\n * 不足   对于一个操作，需要两个时间戳才能计算出性能耗时     想要测量多个操作时，需要重复调用\r\n * 进阶版\r\n **/\r\n \r\n\r\n /**使用PerformanceObserver接口，解决以下问题\r\n  *1，每次查看数据时，要主动调用接口\r\n    2. 当获取不同类型的数据指标时，产生重复逻辑\r\n    3.其他资源需要同时操作 performance buffer时，产生资源竞争情况\r\n\r\n  */\r\n\r\nconst getMeasure = ()=>{\r\n    const observer = new PerformanceObserver(list =>{\r\n        list.getEntries().forEach(({name, duration}) => {\r\n            console.log(`name is ${name}, duration is ${duration}`);\r\n            //操作数据逻辑\r\n        });\r\n    });\r\n\r\n    //只需要关注 measure 的数据\r\n   observer.observe({\r\n        entryTypes: ['measure'],\r\n        buffered: true\r\n  })\r\nreturn observer;\r\n}\r\n\r\nmodule.exports = {getMeasure};\r\n\n\n//# sourceURL=webpack:///./src/optindex.js?");
+/**
+ * NOTE:
+ *         mark                                       measure
+ * 作用   运行某个操作时，记录一个时间戳                  针对起始+结束的mark值，汇总形成一个直接可用的性能数据
+ * 不足   对于一个操作，需要两个时间戳才能计算出性能耗时     想要测量多个操作时，需要重复调用
+ * 进阶版
+ **/
+
+
+/**使用PerformanceObserver接口，解决以下问题
+ *1，每次查看数据时，要主动调用接口
+   2. 当获取不同类型的数据指标时，产生重复逻辑
+   3.其他资源需要同时操作 performance buffer时，产生资源竞争情况
+
+ */
+
+const getMeasure = () => {
+    const observer = new PerformanceObserver(list => {
+        list.getEntries().forEach(({ name, duration }) => {
+            console.log(`name is ${name}, duration is ${duration}`);
+            //操作数据逻辑
+        });
+    });
+
+    //只需要关注 measure 的数据
+    observer.observe({
+        entryTypes: ['measure'],
+        buffered: true
+    })
+    return observer;
+}
+
+module.exports = { getMeasure };
 
 /***/ }),
 
@@ -115,7 +263,35 @@ eval("/**\r\n * NOTE:\r\n *         mark                                       m
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("var {measure, retriveResult} =  __webpack_require__(/*! ./index.js */ \"./src/index.js\");\r\n\r\nvar {getMeasure} = __webpack_require__(/*! ./optindex.js */ \"./src/optindex.js\");\r\n\r\nfunction foo(){\r\n    for(var i = 0; i < 1000; i++){}\r\n}\r\n\r\n//--------------use optmeasure---------------------\r\n\r\n//项目入口文件的顶部\r\nlet observer;\r\nif(window.PerformanceObserver){\r\n    console.log('Observer');\r\n    observer = getMeasure();\r\n}\r\n\r\n//某个时机，释放监测\r\nif(observer){\r\n    setTimeout(()=>{\r\n        observer.disconnect();\r\n    }, 10000)\r\n}\r\n\r\nmeasure(foo);\r\n//--------------use optmeasure---------------------\r\n\r\nconst duration = retriveResult('foo');\r\nconsole.log(`foo execute duration:${duration}`); //complex 0.19999999858555384, easy 0.09999999747378752,测试精确度不同\n\n//# sourceURL=webpack:///./src/test.js?");
+var {measure, retriveResult} =  __webpack_require__(/*! ./index.js */ "./src/index.js");
+
+var {getMeasure} = __webpack_require__(/*! ./optindex.js */ "./src/optindex.js");
+
+function foo(){
+    for(var i = 0; i < 1000; i++){}
+}
+
+//--------------use optmeasure---------------------
+
+//项目入口文件的顶部
+let observer;
+if(window.PerformanceObserver){
+    console.log('Observer');
+    observer = getMeasure();
+}
+
+//某个时机，释放监测
+if(observer){
+    setTimeout(()=>{
+        observer.disconnect();
+    }, 10000)
+}
+
+measure(foo);
+//--------------use optmeasure---------------------
+
+const duration = retriveResult('foo');
+console.log(`foo execute duration:${duration}`); //complex 0.19999999858555384, easy 0.09999999747378752,测试精确度不同
 
 /***/ }),
 
@@ -126,8 +302,13 @@ eval("var {measure, retriveResult} =  __webpack_require__(/*! ./index.js */ \"./
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("const prefix = fix => input => `${fix}${input}`;\r\nconst prefixStart = prefix('start');\r\nconst prefixEnd = prefix('end');\r\n\r\nmodule.exports =  {prefix, prefixStart, prefixEnd};\n\n//# sourceURL=webpack:///./src/utils.js?");
+const prefix = fix => input => `${fix}${input}`;
+const prefixStart = prefix('start');
+const prefixEnd = prefix('end');
+
+module.exports =  {prefix, prefixStart, prefixEnd};
 
 /***/ })
 
 /******/ });
+//# sourceMappingURL=main.js.map

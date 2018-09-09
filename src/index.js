@@ -114,4 +114,6 @@ const observer = new PerformanceObserver(function(list) {
 // 注册绘制观察者
 observer.observe({ entryTypes: ["paint"] })
 
-module.exports = { measure: measureV1, retriveResult: retriveResultV1 };
+module.exports = { measure: measure, retriveResult: retriveResult };
+
+window.measure = measure;

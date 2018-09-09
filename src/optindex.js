@@ -22,7 +22,7 @@ const getMeasure = () => {
         });
     });
 
-    //只需要关注 measure 的数据
+    //只需要关注 measure 的数据,必须调用perform.measure才生效
     observer.observe({
         entryTypes: ['measure'],
         buffered: true
