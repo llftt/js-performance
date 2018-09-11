@@ -27,6 +27,9 @@ var indexHTML = `<!DOCTYPE html>
 ;
 
 router.get('/', function(req, res){
+    console.log('---/')
+    res.header("Access-Control-Allow-Origin","*");
+    res.header("Access-Control-Allow-Headers", "Content-Type");  
     res.send(indexHTML);
 })
 

@@ -1,5 +1,5 @@
 # js-performance
-js性能采集
+js性能采集，perform api测试，收集浏览器加载性能信息，错误信息收集，以及使用node中间件 source-map对压缩后的代码进行错误解析
 
 ### Performance Timeline
 性能时间线
@@ -87,3 +87,17 @@ try-catch                  window.onerror          Vue.config.errorHandler      
             上传服务器                                              node中间层解析  服务器解析
 
 https://github.com/luozhihao/error-catch-report/blob/master/server/route.js
+
+------------------------------------------------------------------------------
+9.11 
+    新增app跨域支持   
+    前端请求更改为cors
+    新增production环境，进行代码压缩
+    node 6.10.2版本，不支持webAssembly,切换到8.9可以
+    开发环境增加配置，进行代码压缩
+       optimaization:{
+           minimizer:[
+               new UglifyJsPlugin()
+           ]
+       } 
+    

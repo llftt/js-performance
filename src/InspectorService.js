@@ -6,36 +6,42 @@ var inspectorService = {
             console.log('scriptURI: ' + scriptURI);
             console.log('lineNo: ' + lineNo);
             console.log('columnNo: ' + columnNo);
-            console.log('error: ' + error);
-            var errorMsgObj = {errorMessage, scriptURI, lineNo, columnNo, error};
+          
+            var stack = error.stack;
+              console.log(stack);
+            var errorMsgObj = {errorMessage, scriptURI, lineNo, columnNo, stack};
+            console.log(errorMsgObj);
             that.uploadMsg(errorMsgObj);
         }
     },
 
     uploadMsg:function(msgObj){
-        var xhr;
-        if(XMLHttpRequest){
-            var xhr = new XMLHttpRequest();
-
-        }else if(ActiveXObject){
-            
-                var versions = ["MSXML2.XMLHttp.6.0", "MSXML2.XMLHttp.3.0", "MSXML2.XMLHttp"];
-                var i, len;
-                for(i = 0, len = versions.length; i < len; i++){
-                    try {
-                         new ActiveXObject(versions[i]);
-                         arguments.callee.activeString = versions[i];
-                         break;
-                    } catch (error) {
+        var xhr = new XMLHttpRequest();
+        if('withCredentials' in xhr){
+            console.log('withCredentials');
+            // xhr.withCredentials = true;
+        }else if(typeof XDomainRequest != 'undefined'){
+                xhr = new XDomainRequest();
+                // var versions = ["MSXML2.XMLHttp.6.0", "MSXML2.XMLHttp.3.0", "MSXML2.XMLHttp"];
+                // var i, len;
+                // for(i = 0, len = versions.length; i < len; i++){
+                //     try {
+                //          new ActiveXObject(versions[i]);
+                //          arguments.callee.activeString = versions[i];
+                //          break;
+                //     } catch (error) {
                         
-                    }
-                }
-                xhr = new ActiveXObject(arguments.callee.activeString); 
+                //     }
+                // }
+                // xhr = new ActiveXObject(arguments.callee.activeString); 
         }
         if(xhr){
             xhr.open('post', 'http://localhost:9000/middleware/errorMsg', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(msgObj));
+            xhr.onloadend = function(data){
+                console.log(xhr.response);
+            }
         }
     }
 }

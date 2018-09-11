@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "webpack-dev-server --open --colors",
-    "dev": "webpack"
+    "dev": "webpack-dev-server --open --colors --config build/webpack.config.dev.js",
+    "prod":"webpack-dev-server --config build/webpack.config.prod.js"
   },
   "repository": {
     "type": "git",
